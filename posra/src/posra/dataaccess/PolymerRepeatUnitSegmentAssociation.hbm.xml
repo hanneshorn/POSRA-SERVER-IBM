@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.PolymerRepeatUnitSegmentAssociation" table="PolymerRepeatUnitSegmentAssociation" catalog="POSRA">
+        <composite-id name="id" class="posra.dataaccess.PolymerRepeatUnitSegmentAssociationId">
+            <key-property name="prsId" type="int">
+                <column name="prsID" />
+            </key-property>
+            <key-property name="polymerId" type="int">
+                <column name="polymerID" />
+            </key-property>
+            <key-property name="segmentId" type="int">
+                <column name="segmentID" />
+            </key-property>
+            <key-property name="repeatUnitId" type="int">
+                <column name="repeatUnitID" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="repeatUnit" class="posra.dataaccess.RepeatUnit" update="false" insert="false" fetch="select">
+            <column name="repeatUnitID" not-null="true">
+                <comment>/* comment truncated */ /*XOR with PolymerID*/</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="segment" class="posra.dataaccess.Segment" update="false" insert="false" fetch="select">
+            <column name="segmentID" not-null="true" />
+        </many-to-one>
+        <many-to-one name="polymer" class="posra.dataaccess.Polymer" update="false" insert="false" fetch="select">
+            <column name="polymerID" not-null="true">
+                <comment>/* comment truncated */ /*XOR with RepeatUnitID*/</comment>
+            </column>
+        </many-to-one>
+        <property name="segmentType" type="char">
+            <column name="segmentType" length="1" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

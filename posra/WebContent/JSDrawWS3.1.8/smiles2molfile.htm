@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js"></script>
+    <script type="text/javascript" src='Scilligence.JSDraw2.js'></script>
+</head>
+<body>
+
+
+<!-----------------------------------------------------------------------
+
+This is a test web page to call the extend command *smiles2molfile* in JSDraw.WebService
+
+*smiles2molfile* command call the service convert a SMILES into a molfile
+
+----------------------------------------------------------------------->
+
+<div id='editor'></div>
+<script type="text/javascript">
+    function beforesubmit() {
+        document.getElementById("smiles").value = jsd.getSmiles();
+    }
+
+    scil.ready(function () {
+        // run the following code in page OnLoad event
+        var jsd = new JSDraw2.Editor("editor", { width: 700, height: 350 });
+		console.log("Made the editor");
+
+        var smiles = "c1ccccc1CCCCO";
+        scil.Utils.ajax("Service.aspx?cmd=smiles2molfile", function (ret) {
+            jsd.setMolfile(ret);
+        }, { smiles: smiles });
+    });
+</script>
+
+</body>
+</html>

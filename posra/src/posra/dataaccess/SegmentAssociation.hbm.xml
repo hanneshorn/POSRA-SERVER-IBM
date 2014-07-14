@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.SegmentAssociation" table="SegmentAssociation" catalog="POSRA">
+        <composite-id name="id" class="posra.dataaccess.SegmentAssociationId">
+            <key-property name="segmentAssociationId" type="int">
+                <column name="SegmentAssociationID" />
+            </key-property>
+            <key-property name="polymerId" type="int">
+                <column name="polymerID" />
+            </key-property>
+            <key-property name="segmentId1" type="int">
+                <column name="segmentID1" />
+            </key-property>
+            <key-property name="segmentId2" type="int">
+                <column name="segmentID2" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="segmentBySegmentId2" class="posra.dataaccess.Segment" update="false" insert="false" fetch="select">
+            <column name="segmentID2" not-null="true" />
+        </many-to-one>
+        <many-to-one name="segmentBySegmentId1" class="posra.dataaccess.Segment" update="false" insert="false" fetch="select">
+            <column name="segmentID1" not-null="true" />
+        </many-to-one>
+        <many-to-one name="polymer" class="posra.dataaccess.Polymer" update="false" insert="false" fetch="select">
+            <column name="polymerID" not-null="true" />
+        </many-to-one>
+        <property name="relationshipType" type="string">
+            <column name="relationshipType" length="2" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

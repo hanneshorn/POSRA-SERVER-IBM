@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.RepeatUnit" table="RepeatUnit" catalog="POSRA">
+        <id name="repeatUnitId" type="java.lang.Integer">
+            <column name="repeatUnitID" />
+            <generator class="identity" />
+        </id>
+        <set name="segments" table="Segment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="repeatUnitID" />
+            </key>
+            <one-to-many class="posra.dataaccess.Segment" />
+        </set>
+        <set name="polymerRepeatUnitSegmentAssociations" table="PolymerRepeatUnitSegmentAssociation" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="repeatUnitID" not-null="true">
+                    <comment>/* comment truncated */ /*XOR with PolymerID*/</comment>
+                </column>
+            </key>
+            <one-to-many class="posra.dataaccess.PolymerRepeatUnitSegmentAssociation" />
+        </set>
+    </class>
+</hibernate-mapping>

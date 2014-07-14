@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.Segment" table="Segment" catalog="POSRA">
+        <id name="segmentId" type="java.lang.Integer">
+            <column name="segmentID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="smiles" class="posra.dataaccess.Smiles" fetch="select">
+            <column name="SMILESID" />
+        </many-to-one>
+        <many-to-one name="repeatUnit" class="posra.dataaccess.RepeatUnit" fetch="select">
+            <column name="repeatUnitID" />
+        </many-to-one>
+        <property name="bondCount" type="int">
+            <column name="bondCount" not-null="true" />
+        </property>
+        <property name="degree" type="string">
+            <column name="degree" not-null="true" />
+        </property>
+        <property name="type" type="char">
+            <column name="type" length="1" not-null="true" />
+        </property>
+        <set name="polymerRepeatUnitSegmentAssociations" table="PolymerRepeatUnitSegmentAssociation" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="segmentID" not-null="true" />
+            </key>
+            <one-to-many class="posra.dataaccess.PolymerRepeatUnitSegmentAssociation" />
+        </set>
+        <set name="segmentAssociationsForSegmentId2" table="SegmentAssociation" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="segmentID2" not-null="true" />
+            </key>
+            <one-to-many class="posra.dataaccess.SegmentAssociation" />
+        </set>
+        <set name="segmentAssociationsForSegmentId1" table="SegmentAssociation" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="segmentID1" not-null="true" />
+            </key>
+            <one-to-many class="posra.dataaccess.SegmentAssociation" />
+        </set>
+    </class>
+</hibernate-mapping>

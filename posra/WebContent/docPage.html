@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="bootstrap/bootstrap-3.1.1-dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="myStyle.css">
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="bootstrap/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="myQueryScript.js"></script>
+</head>
+<body>
+
+<div class="header">
+				<h2>Documentation/FAQs</h2>
+			</div>
+			<div class="docbody">
+				<div class="docheaders">
+					Why does P-OSRA return garbage when I give it an image file?
+				</div>
+				<div class="docsection">
+					<p>There are several reasons why P-OSRA may have failed to return the proper output. 
+					Most commonly, it is one of the following problems:</p>
+						<ul>
+							<li>You drew one of the braces intersecting the very end of a bond</li>
+							<li>The braces are, for some reason, offset</li>
+							<li>The image is too 'grainy' or 'blurry'</li>
+							<li>Other formatting issues (see third row for one example)</li>
+						</ul>
+					<p>You can see pictures of both the issues and the remedies for these problems below.</p>
+				</div>
+				<div class="imagegallery">
+				<!--  names: issue/solution(intersection/offset/blurry).gif -->
+					<table>
+						<thead>
+							<tr><th colspan="3">Common Problems and Resolutions</th></tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="tableclass">Here we see that one of the braces intersects the very
+								end of one of the bonds. This is non-ideal.</td>
+								<td><img src="images/issueintersection.gif" alt="Image showing the intersection issue."/></td>
+								<td><img src="images/solutionintersection.gif" alt="Image showing the resolution of the intersection issue."/></td>
+							</tr>
+							<tr>
+								<td class="tableclass">Here we have the braces offset. Sometimes this will not
+								be as obvious. Check your images carefully!</td>
+								<td><img src="images/issueoffset.gif" alt="Image showing the offset issue."/></td>
+								<td><img src="images/solutionoffset.gif" alt="Image showing the resolution of the offset issue." /></td>
+							</tr>
+							<tr>
+								<td class="tableclass">Here we see two problems. The first problem is the blurriness
+								of the first image; the second problem is the abnormally large whitespace
+								between the marked methine group and attached methyl group. The image on the 
+								right resolves both issues.</td>
+								<td><img src="images/issueblurry.gif" alt="Image showing the blurry/whitespace issue."/></td>
+								<td><img src="images/solutionblurry.gif" alt="Image showing the resolution of the blurry/whitespace issue."/></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+</body>

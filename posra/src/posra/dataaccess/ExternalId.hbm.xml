@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2014 12:19:45 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.ExternalId" table="ExternalID" catalog="POSRA">
+        <id name="value" type="string">
+            <column name="value" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="polymer" class="posra.dataaccess.Polymer" fetch="select">
+            <column name="polymerID" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

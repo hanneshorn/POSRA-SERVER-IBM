@@ -1,0 +1,117 @@
+* {
+	font-family: "Times New Roman", Georgia, serif;
+}
+
+.header {
+	text-align: center;
+	font-family: "Times New Roman", Georgia, serif;
+	color: grey;
+}
+
+#nav li {
+	display: inline;
+	margin: auto;
+	/* was once text: center; */
+}
+
+.uploadAnImage {
+	height: 160px;
+	width: 300px;
+	border: 1px solid black;
+	margin: auto;
+	padding: 20px;
+	color: #01242D;
+	text-align: center;
+}
+
+.docbody {
+	margin: 40px;
+	font-size: 16px;
+	color: #01242D;	
+}
+
+.centereddiv {
+	margin: auto;
+	width: 200px;
+	margin: auto;
+	padding: 20px;
+	/* was once text: center; */
+	/* float: right; */
+}
+
+.buttondiv {
+	display: inline;
+	margin:auto;
+	width: 1000px;
+	padding: 20px;
+}
+
+.rightfloater {
+	width: 350px;
+	height: 200px;
+	padding: 10px;
+	float:right;
+}
+
+.leftfloater {
+	width: 350px;
+	height: 200px;
+	padding: 10px;
+	float:left;
+}
+
+table {
+	border: 1px solid black;
+	padding: 5px;
+	margin: auto;
+}
+
+th {
+	text-align: center;
+	border: 1px solid black;
+}
+
+td {
+	padding: 5px;
+	border: 1px solid black;
+}
+
+table .tableclass {
+	text-align: left;
+	border: 1px solid black;
+	overflow: hidden;
+	width: 250px;
+	padding: 10px;
+}
+
+.contactusbody {
+	display: inline;
+}
+
+.contactbox {
+	border-radius: 10px;
+	border: 1px solid #4B7C88;
+	background-color: #81A5AD;
+	height: 150px;
+	width: 300px;
+	float: left;
+	margin: 10px;
+	padding-left: 10px;
+	padding-top: 5px; 
+	text-align: left;
+}
+
+.contactbox span{
+	font-size: 16px;
+	color: #01242D;
+}
+
+.contactbox a {
+	color: #255C69;	
+}
+
+/* .color-primary-0 { color: #255C69 }
+.color-primary-1 { color: #81A5AD }
+.color-primary-2 { color: #4B7C88 }
+.color-primary-3 { color: #0C3F4B }
+.color-primary-4 { color: #01242D } */

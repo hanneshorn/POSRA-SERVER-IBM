@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="posra.dataaccess.Smiles" table="SMILES" catalog="POSRA">
+        <id name="smilesid" type="java.lang.Integer">
+            <column name="SMILESID" />
+            <generator class="identity" />
+        </id>
+        <property name="smilesstring" type="string">
+            <column name="SMILESString" length="16777215" not-null="true" />
+        </property>
+        <set name="segments" table="Segment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="SMILESID" />
+            </key>
+            <one-to-many class="posra.dataaccess.Segment" />
+        </set>
+    </class>
+</hibernate-mapping>
