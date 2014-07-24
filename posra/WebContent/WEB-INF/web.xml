@@ -12,6 +12,11 @@
   <param-name>osra_location</param-name>
   <param-value>C:\Users\IBM_ADMIN\Documents\GitHub\UCSC-IBM-POSRA-CORE\src\osra.exe</param-value>
  </context-param>
+ <context-param>
+  <description>Path to posra script</description>
+  <param-name>posra_script_location</param-name>
+  <param-value>C:\Users\IBM_ADMIN\Documents\GitHub\UCSC-IBM-POSRA-CORE\posra.sh</param-value>
+ </context-param>
  <data-source>
   <description>jdbc:mysql://localhost:3306/POSRA</description>
   <name>POSRA</name>

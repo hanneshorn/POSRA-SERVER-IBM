@@ -11,26 +11,99 @@
 <script src="bootstrap/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="myQueryScript.js"></script>
 </head>
+
 <body>
 
-	<div class="header">
-		<h2>Contact Us</h2>
-	</div>
-	<div class="contactusbody">
-		<div class="contactbox">
-			<span> Bryn Reinstadler <br /> <br /> Ph: 406-422-3113 <br />
-				Email: br6@williams.edu <br /> <a href="mailto:br6@williams.edu">Click
-					here to email Ms Reinstadler.</a>
-			</span>
-		</div>
-		<div class="contactbox">
-			<span> Xxxx Xxxxx, PhD <br /> <br /> Ph: 555-555-5555 <br />
-				Email: xxx@ibm.us.com <br /> <a href="mailto:xxx@ibm.us.com">Click
-					here to email Dr Xxxx.</a>
-			</span>
-		</div>
-	</div>
+	<div class="wrapper">
+
+		<div class="container-fluid">
+
+			<div class="header">
+				<h2>
+					<strong>Contact Us</strong>
+				</h2>
+			</div>
+			<div class="row bootstrappieces">
 
 
+
+				<div class="col-md-2 shadowboxes">
+					<h3>P-OSRA</h3>
+					<div style="text-align: left;">
+						<h5>
+							is an open-source polymer structure database. It is an extension
+							of <a href="http://cactus.nci.nih.gov/osra/">OSRA</a>, which
+							converts graphical representations of chemical structures into
+							SMILES. We have also used several open source libraries and
+							applications, most notably <a
+								href="http://openbabel.org/wiki/Main_Page">OpenBabel</a> and <a
+								href="http://wiki.jmol.org/index.php/Main_Page">Jmol/JSmol</a>.
+							Contact these developers for specific questions.
+						</h5>
+					</div>
+				</div>
+
+				<div class="col-md-5" id="contacttable">
+					<form action="contact.php" method="post">
+						<div class="shadowboxes" style="padding: 30px">
+							<table>
+								<tr>
+									<th colspan="3"><h3>We welcome comments, questions,
+											and suggestions!</h3>
+										<br /></th>
+								</tr>
+								<tr>
+									<td></td>
+								</tr>
+								<tr>
+									<td>Your name<br></td>
+									<td colspan="3"><input type="text" name="cf_name"
+										class="form-control"><br></td>
+								</tr>
+								<tr>
+									<td>Your e-mail<br></td>
+									<td colspan="3"><input type="text" name="cf_email"
+										class="form-control"><br></td>
+								</tr>
+								<tr>
+									<td>Message<br></td>
+									<td colspan="3"><textarea name="cf_message"
+											class="form-control" rows="12"></textarea></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><input type="submit" value="Send" class="form-control" /></td>
+									<td colspan="2"><input type="reset" value="Clear"
+										class="form-control" /></td>
+								</tr>
+							</table>
+
+
+
+						</div>
+						<!-- end of shadowboxes div -->
+					</form>
+				</div>
+				<!-- contact table column -->
+
+				<div class="col-md-4 shadowboxes">
+					<h3>
+						Don't like forms?<br /> You can email us instead.
+					</h3>
+					<br />
+
+					<div id="contactbuttoncontainer">
+						<a href="mailto:hanshorn@us.ibm.com" style="color: #01242D"><span
+							class="emailbutton">Email Dr Horn</span></a> <a
+							href="mailto:brynmarier@gmail.com" style="color: #01242D"><span
+							class="emailbutton">Email Intern</span></a>
+					</div>
+				</div>
+			</div>
+			<!-- end of row -->
+		</div>
+		<!-- end of fluid container -->
+	</div>
+	<!-- end of wrapper -->
 
 </body>

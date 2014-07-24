@@ -1,12 +1,80 @@
+/* General Style */
+
 * {
-	font-family: "Times New Roman", Georgia, serif;
+	font-family: "Courier New", monotype;
+	margin: 0;
 }
+
+html, body {
+	height: 100%;
+}
+
+a {
+	color: lightblue;
+}
+
+.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -4em;
+}
+
+.footer, .push {
+	height: 4em;
+	color: lightgrey;
+	background: #255C69;
+	padding: 10px;
+	clear: both;
+}
+
+.bootstrappieces {
+	padding: 10px 10px 60px 10px;
+}
+
+.rightfloater {
+	width: 350px;
+	height: 200px;
+	padding: 10px;
+	float: right;
+}
+
+.leftfloater {
+	width: 350px;
+	height: 200px;
+	padding: 10px;
+	float: left;
+}
+
+.shadowboxes {
+	background: #81A5AD;
+	border-radius: 20px;
+	box-shadow: 7px 7px 3px #888888;
+	margin: 10px;
+	text-align: center;
+	padding: 20px;
+
+}
+
+.shadowboxes img {
+	border: 1px black solid;
+	align: auto;
+}
+
+.shadowboxes table {
+	align: auto;
+}
+
+/* Style for any header text */
 
 .header {
 	text-align: center;
-	font-family: "Times New Roman", Georgia, serif;
 	color: grey;
+	font-size: h2;
+	font-weight: bold;
 }
+
+/* Style for the tabs */
 
 #nav li {
 	display: inline;
@@ -14,69 +82,31 @@
 	/* was once text: center; */
 }
 
+/* Style for the Main Page */
+
 .uploadAnImage {
-	height: 160px;
+	/* height: 160px;
 	width: 300px;
-	border: 1px solid black;
-	margin: auto;
+	/* border: 1px solid black; */
+	margin: auto;*/
 	padding: 20px;
-	color: #01242D;
+	/* color: #01242D;*/
 	text-align: center;
 }
+
+/* Style for FAQ Page */
 
 .docbody {
 	margin: 40px;
 	font-size: 16px;
-	color: #01242D;	
+	color: #01242D;
 }
 
-.centereddiv {
-	margin: auto;
-	width: 200px;
-	margin: auto;
-	padding: 20px;
-	/* was once text: center; */
-	/* float: right; */
-}
-
-.buttondiv {
-	display: inline;
-	margin:auto;
-	width: 1000px;
-	padding: 20px;
-}
-
-.rightfloater {
-	width: 350px;
-	height: 200px;
-	padding: 10px;
-	float:right;
-}
-
-.leftfloater {
-	width: 350px;
-	height: 200px;
-	padding: 10px;
-	float:left;
-}
-
-table {
-	border: 1px solid black;
-	padding: 5px;
+.imagegallery {
 	margin: auto;
 }
 
-th {
-	text-align: center;
-	border: 1px solid black;
-}
-
-td {
-	padding: 5px;
-	border: 1px solid black;
-}
-
-table .tableclass {
+.imagegallery table td {
 	text-align: left;
 	border: 1px solid black;
 	overflow: hidden;
@@ -84,34 +114,52 @@ table .tableclass {
 	padding: 10px;
 }
 
-.contactusbody {
+/* Style for Contact Us Page */
+
+#contacttable {
+	align: center;
+}
+
+#contactbuttoncontainer {
 	display: inline;
+	padding: 40px;
+	margin: auto;
 }
 
-.contactbox {
-	border-radius: 10px;
-	border: 1px solid #4B7C88;
-	background-color: #81A5AD;
-	height: 150px;
-	width: 300px;
-	float: left;
-	margin: 10px;
-	padding-left: 10px;
-	padding-top: 5px; 
-	text-align: left;
-}
-
-.contactbox span{
-	font-size: 16px;
+.emailbutton {
+	height: 40px;
+	width: 150px;
+	background: #4B7C88;
 	color: #01242D;
+	border-radius: 10px;
+	box-shadow: 3px 3px 1px #888888;
+	text-align: center;
+	padding: 10px;
+	margin: 20px;
+	/* display: block; */
 }
 
-.contactbox a {
-	color: #255C69;	
+/* General Table Stylings */
+
+table {
+	padding: 5px;
 }
 
-/* .color-primary-0 { color: #255C69 }
-.color-primary-1 { color: #81A5AD }
-.color-primary-2 { color: #4B7C88 }
-.color-primary-3 { color: #0C3F4B }
-.color-primary-4 { color: #01242D } */
+th {
+	text-align: center;
+}
+
+td {
+	padding: 5px;
+}
+
+/*
+Colors for the Color Scheme
+
+.color-primary-0 { color: #255C69 } dark teal
+.color-primary-1 { color: #81A5AD } lightest blue
+.color-primary-2 { color: #4B7C88 } medium dark blue
+.color-primary-3 { color: #0C3F4B } between the first and last
+.color-primary-4 { color: #01242D } darkest blue
+
+*/
