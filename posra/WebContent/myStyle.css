@@ -10,7 +10,11 @@ html, body {
 }
 
 a {
-	color: lightblue;
+	color: blue;
+}
+
+table a {
+	color: blue;
 }
 
 .wrapper {
