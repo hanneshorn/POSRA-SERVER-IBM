@@ -168,8 +168,19 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jdbc</artifactId>
 			<version>7.0.47</version>
-		</dependency>
-
+		</dependency>		
+		
+		<dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-spec</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+				
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>

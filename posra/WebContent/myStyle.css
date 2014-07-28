@@ -14,6 +14,7 @@ a {
 }
 
 .wrapper {
+	color: black;
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;
@@ -69,7 +70,7 @@ a {
 
 .header {
 	text-align: center;
-	color: grey;
+	color: black;
 	font-size: h2;
 	font-weight: bold;
 }

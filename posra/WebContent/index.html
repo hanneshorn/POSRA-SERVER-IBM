@@ -15,16 +15,6 @@
 
 <script src="bootstrap/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 
-<!-- Scripts for JSDraw -->
-<!-- 
-<script
-	src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/dojo.js"
-	type="text/javascript"></script>
-<script src="JSDrawWS3.1.8/Service.aspx" type="text/javascript"></script>
-<script type="text/javascript"
-	src='JSDraw3.1.7/Scilligence.JSDraw2.Pro.js'></script>
-<!-- End Scripts for JSDraw -->
-
 <!--  Scripts for JSMol -->
 <script type="text/javascript"
 	src="jmol-14.0.13/jsmol/JSmol.min.nojq.js"></script>
@@ -95,13 +85,10 @@
 									<script type="text/javascript">
 										function PreviewImage() {
 											var oFReader = new FileReader();
-											oFReader
-													.readAsDataURL(document
-															.getElementById("uploadImage").files[0]);
+											oFReader.readAsDataURL(document.getElementById("uploadImage").files[0]);
 
 											oFReader.onload = function(oFREvent) {
-												document
-														.getElementById("uploadPreview").src = oFREvent.target.result;
+												document.getElementById("uploadPreview").src = oFREvent.target.result;
 											};
 										};
 									</script>

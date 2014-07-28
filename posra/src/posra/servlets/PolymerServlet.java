@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.*;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.annotation.MultipartConfig;
@@ -28,7 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Servlet implementation class FileCounter
+ * Servlet implementation class PolymerServlet
  */
 
 @MultipartConfig
@@ -37,23 +39,21 @@ public class PolymerServlet extends HttpServlet {
 
 	// private final static String OSRA_LIB = "libosra_java";
 	static {
-		System.setProperty("line.separator", "\n"); // so we won't have to mess
-													// with DOS line endings
-													// ever again
-		// load the shared osra library.
-		// NOTE that this is currently going to fail on 32bit cygwin using a
-		// 64bit VM under 64bit Eclipse!!
-		// workarounds: - use a 32bit VM under 32bit Eclipse
-		// - try to build posra (and all its prereqs) under 64bit cygwin - some
-		// likelihood to fail with current immature state of 64bit cygwin
-		// try {
-		// System.loadLibrary(OSRA_LIB);
-		// System.out.println("done loading '" + OSRA_LIB + "'!");
-		// } catch (Error e) {
-		// System.err.println("Error loading native library '" + OSRA_LIB +
-		// "'; java.library.path=" + System.getProperty("java.library.path"));
-		// throw e; // re-throw
-		// }
+		// fixes issues with DOS line endings
+		System.setProperty("line.separator", "\n");
+
+		/*
+		 * this attempt to load the shared osra library will fail on 32 bit cyg
+		 * using a 64bit VM under 64 bit Eclipse. Can workaround w/ 32bit VM
+		 * under 32bit Eclilpse Or, can try to build posra under 64bit cygwin
+		 * (immature?) try { System.loadLibrary(OSRA_LIB);
+		 * System.out.println("done loading '" + OSRA_LIB + "'!"); } catch
+		 * (Error e) { System.err.println("Error loading native library '" +
+		 * OSRA_LIB + "'; java.library.path = " +
+		 * System.getProperty("java.library.path")); throw e; // re-throw error
+		 * }
+		 */
+
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -63,7 +63,8 @@ public class PolymerServlet extends HttpServlet {
 	private File imagePath;
 
 	public void init() throws ServletException {
-		filePath = getServletContext().getInitParameter("image_location");
+		// filePath = getServletContext().getInitParameter("image_location");
+		filePath = "C:" + "\\" + "Users" + "\\" + "IBM_ADMIN" + "\\" + "Documents" + "\\" + "POSRA-SERVER-IBM" + "\\" + "posra" + "\\" + "WebContent" + "\\" + "UploadedImages" + "\\";
 		osraPath = getServletContext().getInitParameter("osra_location");
 		posraScriptPath = getServletContext().getInitParameter(
 				"posra_script_location");
@@ -82,21 +83,6 @@ public class PolymerServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-
-		out.print("<!DOCTYPE html>\n<html lang=\"en\">");
-		out.print("<head>\n\t<meta charset=\"utf-8\"/>"
-				+ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />"
-				+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-				+ "<link href=\"bootstrap/bootstrap-3.1.1-dist/css/bootstrap.min.css\" rel=\"stylesheet\">"
-				+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"myStyle.css\">"
-				+ "<script type=\"text/javascript\" src=\"http://code.jquery.com/jquery-latest.min.js\"></script>"
-				+ "<script src=\"bootstrap/bootstrap-3.1.1-dist/js/bootstrap.min.js\"></script>"
-				+ "<script type=\"text/javascript\" src=\"jmol-14.0.13/jsmol/JSmol.min.js\"></script>"
-				+ "<script type=\"text/javascript\" src=\"myQueryScript.js\"></script>"
-				+ "</head>");
-
-		out.print("<body>");
 
 		if (!imagePath.exists()) {
 			if (!imagePath.mkdir()) {
@@ -112,11 +98,16 @@ public class PolymerServlet extends HttpServlet {
 
 			// origFilePath is the path on the client of the file being uploaded
 			String origFilePath = getUploadedFileName(part);
+			ImageBean ib = new ImageBean();
+			
 
 			// the "fileName" will be the local path (filePath) and just the
 			// file name of the uploaded file.
 			File newFile = new File(origFilePath);
 			String fileName = filePath + newFile.getName();
+			ib.setPath(newFile.getName());
+			
+			System.out.println("file name: " + fileName);
 
 			// There is io here, a try/catch is needed in case there is a
 			// problem writing the file
@@ -131,117 +122,79 @@ public class PolymerServlet extends HttpServlet {
 				fos.close();
 				is.close();
 
-				out.print("<div class=\"header\"> " + "<h2>POSRA Results</h2>"
-						+ "</div>");
-
-				// Add POSRA CALL
+				ib.setUploadedFile(newFile);
+				request.setAttribute("imagebean", ib);
+				
 				// "fileName" is fullPath to File On Server
 				// "newFile" is the Java File.
-
-	    // out.print("command is: '" + osraPath + " -f can -r 150 " + fileName + "'");
-		Process process = new ProcessBuilder(osraPath, "-f", "can", "-r", "150", fileName).start();
-
-	    //out.print("command is: 'sh " + posraScriptPath + " -f can -r 150 " + fileName.replace("\\", "/") + "'");	  
-	    //Process process = new ProcessBuilder("sh", posraScriptPath, "-f", "can", "-r", "150", fileName.replace("\\", "/")).start();
+				Process process = new ProcessBuilder(osraPath, "-f", "can",
+						"-r", "150", fileName).start();
 
 				try (BufferedReader pbr = new BufferedReader(
 						new InputStreamReader(process.getInputStream()))) {
+					
 					// stdout from process
 					String line;
 					while ((line = pbr.readLine()) != null) {
 						System.out.println(line);
 						break; // first line is SMILES
 					}
-          
-          try { // wait for the process to complete
-			process.waitFor();
-    	  } catch (InterruptedException e) { e.printStackTrace(); }
-        
-          int rc = process.exitValue(); // pick up process' return code
-          String SMILES = line;
-          String SmiNoPoly = removePolymerInfo(SMILES);
-          request.setAttribute("SmiNoPoly", SmiNoPoly);
-          
-          // out.print("<h5>SMILES is " + SMILES + ", rc=" + rc + "</h5>");
-		  
-					// fix side chains here before parsing the smiles string into an array
+
+					try { // wait for the process to complete
+						process.waitFor();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					// pics up return code of process
+					// int rc = process.exitValue();
+
+					String SMILES = line;
+					String SmiNoPoly = removePolymerInfo(SMILES);
+
+					// fixes minor sidechain issues
 					SMILES = fixSideChain(SMILES, "");
-					
+					// parses SMILES into a 2D arraylist
 					ArrayList<ArrayList<String>> SMILESArray = parseSMILESString(SMILES);
-					
-					// This method parses the "old way". I've left the method
-					// for compatibility's sake below as well, but also commented out.
-					// SMILESArray = combForDegrees(SMILESArray);
-					
+					// deals with the nesting of degrees
 					SMILESArray = parseDegrees(SMILESArray);
-					
+
+					// make a copy of the SMILES array
 					ArrayList<ArrayList<String>> pureSMILESArray = new ArrayList<ArrayList<String>>();
-					
-					for(int i=0; i<SMILESArray.size(); ++i){
+					for (int i = 0; i < SMILESArray.size(); ++i) {
 						pureSMILESArray.add(new ArrayList<String>());
-						for(int k=0; k<SMILESArray.get(i).size(); ++k) {
-							pureSMILESArray.get(i).add(SMILESArray.get(i).get(k));
+						for (int k = 0; k < SMILESArray.get(i).size(); ++k) {
+							pureSMILESArray.get(i).add(
+									SMILESArray.get(i).get(k));
 						}
 					}
 					
+					// remove polymeric information so that it can be used
+					// with JSmol modeling
 					pureSMILESArray = makePure(pureSMILESArray);
 					
-					out.print("<table>"
-							+ "<thead><tr><th colspan='3'>POSRA 2D Structure Results</th></tr></thead>"
-							+ "<tbody>" + "<tr>" + "<td><em>Fragment</em></td>"
-									+ "<td><em>Name</em></td>"
-							+ "<td><em>Degree</em></td>");
+					// add to a JavaBean named PolymerBean so we can
+					// pass the request onto the JSP page
+					PolymerBean pb1 = new PolymerBean(SmiNoPoly, SMILESArray,
+							pureSMILESArray);
+					request.setAttribute("polymerbean", pb1);
 
-					boolean startOfDegree = true;
-
-					for (int i = 0; i < SMILESArray.size(); ++i) {
-						// javascript:Jmol.loadFile(jmolApplet0,'$TeCCCOCCC(=O)OCCTe')
-						out.print("<tr>" + "<td><a href=javascript:Jmol.loadFile(jmolApplet0,'$" + pureSMILESArray.get(i).get(0) + "')>" + SMILESArray.get(i).get(0)
-								+ "</a></td>");
-
-						startOfDegree = true;
-
-						for (int k = 1; k < SMILESArray.get(i).size(); ++k) {
-							out.print("<td>" + SMILESArray.get(i).get(k) + "</td>");
-						}
-
-						out.print("</tr>");
-					}
-
-					out.print("<tr>"
-							+ "<td colspan='3'></td></tr>"
-							+ "<tr>"
-							+ "<th colspan='3'>POSRA 3D Structure Results</th></tr>"
-							+ "<tr><td colspan='3'>Please click the links above to display 3D images</td></tr>"
-							+ "<tr><td colspan='3'><a href=javascript:Jmol.loadFile(jmolApplet0,'$" + SmiNoPoly + "')>Click for 3D view of full (submitted) monomer</a></td></tr>"
-							+ "<tr><td style='height: 200px' colspan='3'><div id='appdiv'></div></td><tr>");
-
-					out.print("</tbody></table>");
-					out.print("<div class='rightfloater'><a href='http://www.daylight.com/dayhtml/doc/theory/theory.smiles.html'>"
-							+ "How do I read SMILES strings?</a><br />"
-							+ "For more information on how to interpret the degrees assigned to each "
-							+ "segment of your polymer, press 'Return' and click the 'Documentation' tab."
-							+ "</div>");
-					out.print("<br /><p>If you would like to return to the original page and enter another query, <br />"
-							+ "please press the back button on your browser or the Return button below.");
-					out.print("<form action='index.html' method='post'>"
-							+ "<input type='submit' value='Return'>"
-							+ "</form>");
-				} // close for
-			} // close try
+					// dispatch information to jsp page
+					String url = "/results.jsp";
+					RequestDispatcher dispatcher = getServletContext()
+							.getRequestDispatcher(url);
+					dispatcher.forward(request, response);
+				}
+			}
 
 			catch (IOException e) {
-				out.print("<h5>There was an error</h5>");
-				out.print("Debug: <br />Uploaded File Name: " + origFilePath
-						+ "<br />");
-				out.print("Destination Directory: " + filePath + "<br />");
+				String url2 = "/error.jsp";
+				RequestDispatcher dispatcher2 = getServletContext()
+						.getRequestDispatcher(url2);
+				dispatcher2.forward(request, response);
 			}
-		} // close for loop
-
-		out.print("</body></html>");
-		out.close();
-
-	}// close method doPost
+		}
+	}
 
 	private String getUploadedFileName(Part p) {
 		String file = "", header = "Content-Disposition";
@@ -260,101 +213,129 @@ public class PolymerServlet extends HttpServlet {
 
 		int firstParen = s.indexOf("(");
 		int lastParen = s.lastIndexOf(")");
-		
-		if(firstParen < 0 || lastParen < 0) { return s; }
-		
-		String eg1=s.substring(0,firstParen);
-		String eg2=s.substring(lastParen + 1, s.length());
-		
+
+		if (firstParen < 0 || lastParen < 0) {
+			return s;
+		}
+
+		String eg1 = s.substring(0, firstParen);
+		String eg2 = s.substring(lastParen + 1, s.length());
+
 		boolean eg1hp = hasPolymer(eg1);
 		boolean eg2hp = hasPolymer(eg2);
-		
-		//find the matching parenthesis of the firstParen
-		// args are as such:
-		// the index of the paren; -1 if closing, 1 if opening; string to iterate over
+
+		/* This finds the matching parenthesis of the
+		 * paren you pass it. Pass a 1 if you are passing
+		 * an opening paren, and a -1 if passing a closing
+		 * paren. 's' is the string to iterate over.
+		 */
 		int firstMatch = findMatchingParen(firstParen, 1, s);
 		int lastMatch = findMatchingParen(lastParen, -1, s);
-		
-		String firstSeg = s.substring(firstParen+1, firstMatch);
-		String lastSeg = s.substring(lastMatch+1, lastParen);
+
+		String firstSeg = s.substring(firstParen + 1, firstMatch);
+		String lastSeg = s.substring(lastMatch + 1, lastParen);
 		boolean fshp = hasPolymer(firstSeg);
 		boolean lshp = hasPolymer(lastSeg);
-		
-		if(fshp && !eg1hp) { 
+
+		if (fshp && !eg1hp) {
 			s = switchParentheses(s, eg1, firstSeg, 0);
 		}
-		if(lshp && !eg2hp) { 
+		if (lshp && !eg2hp) {
 			s = switchParentheses(s, eg2, lastSeg, lastParen + 1);
 		}
-		
+
 		return s;
 	}
-	
+
 	public static boolean hasPolymer(String s) {
 		return s.contains("[Lv:") || s.contains("[Po:") || s.contains("[Te:");
 	}
-	
+
+	/* This finds the matching parenthesis of the
+	 * paren you pass it. Pass a 1 if you are passing
+	 * an opening paren, and a -1 if passing a closing
+	 * paren. 's' is the string to iterate over.
+	 */
 	public static int findMatchingParen(int paren, int adder, String s) {
 		int match = paren, counter = 1;
-		
-		while(counter > 0) {
+
+		while (counter > 0) {
 			match += adder;
 			char c = s.charAt(match);
-			if(c =='(' || c == '[') { counter += adder; }
-			else if(c == ')' || c == ']') { counter -= adder; }
+			if (c == '(' || c == '[') {
+				counter += adder;
+			} else if (c == ')' || c == ']') {
+				counter -= adder;
+			}
 		}
-		
+
 		return match;
 	}
-	
-	public static String switchParentheses(String s, String eg, String seg, int firstOrLast) {
-		// if we are passed a 0 in 'firstOrLast', we are dealing with a replacement at the front
-		// and we will need to rearrange the string that was originally inside the parentheses
-		// (which is here called the 'seg')
-		
+
+	/*
+	 * s is the string to iterate over,
+	 * eg is the end group to put in the parens
+	 * seg is the segment to take out of the parens
+	 * If we are passed a 0 in 'firstOrLast',
+	 * that signifies replacement at the front 
+	 * of the molecule, which requires reversal
+	 * of the string originally inside the parens.
+	 */
+	public static String switchParentheses(String s, String eg, String seg,
+			int firstOrLast) {
 		eg = "(" + eg + ")";
 		String temp = "";
-		if(firstOrLast == 0) { 
+		if (firstOrLast == 0) {
 			seg = switchOrder(seg);
 			temp = seg + eg;
 			return temp + s.substring(temp.length(), s.length());
 		}
-		
-		temp = eg + seg; 
-		return s.substring(0, s.length() - temp.length()) + temp;	
+
+		temp = eg + seg;
+		return s.substring(0, s.length() - temp.length()) + temp;
 	}
-	
+
+	/*
+	 * This method naively switches the order of everything
+	 * in a string except for the contents of polymer brackets,
+	 * which are maintained so that their left-to-right 
+	 * reading will not be disturbed.
+	 */
 	public static String switchOrder(String switchMe) {
-		// switch order of everything naively except the 
-		// contents of polymer brackets... want to maintain
-		// the left-to-right reading of those.
 		String newString = "", temp = "";
 		int matcher;
-		
-		for(int i=0; i<switchMe.length(); ++i) {
-			if((i+4) < switchMe.length() && hasPolymer(switchMe.substring(i, i+4))) {
-				newString = switchMe.substring(i, (switchMe.indexOf("]")+1)) + newString;
+
+		for (int i = 0; i < switchMe.length(); ++i) {
+			if ((i + 4) < switchMe.length()
+					&& hasPolymer(switchMe.substring(i, i + 4))) {
+				newString = switchMe.substring(i, (switchMe.indexOf("]") + 1))
+						+ newString;
 				i = switchMe.indexOf("]") + 1;
-			} if (switchMe.substring(i, (i+1)).equals("(") || 
-				  switchMe.substring(i, (i+1)).equals("[")) {
+			}
+			if (switchMe.substring(i, (i + 1)).equals("(")
+					|| switchMe.substring(i, (i + 1)).equals("[")) {
 				matcher = findMatchingParen(i, 1, switchMe);
-				temp = switchOrder(switchMe.substring((i+1), matcher));
-				
-				if(switchMe.substring(i, (i+1)).equals("(")) {
+				temp = switchOrder(switchMe.substring((i + 1), matcher));
+
+				if (switchMe.substring(i, (i + 1)).equals("(")) {
 					newString = "(" + temp + ")" + newString;
-				}
-				else {
+				} else {
 					newString = "[" + temp + "]" + newString;
 				}
-				
-				i = matcher+1;
+
+				i = matcher + 1;
 			} else {
-				newString = switchMe.substring(i, i+1) + newString;
+				newString = switchMe.substring(i, i + 1) + newString;
 			}
 		}
 		return newString;
 	}
 
+	/*
+	 * This method runs through the SMILES array and 
+	 * replaces all of the end labels (X3, eg) with
+	 * [Te] in order to be able to use it for JSmol modeling.
+	 */
 	private ArrayList<ArrayList<String>> makePure(
 			ArrayList<ArrayList<String>> SArray) {
 		String curStr = "";
@@ -379,19 +360,15 @@ public class PolymerServlet extends HttpServlet {
 		} else { // smiles string does exist
 			SMILES = SMILES.trim();
 
-			// useful variables that mark different placeholders in the SMILES
-			// string
-			// The placeholder shows where we are now, the previousPlace is
-			// where we
-			// just were, the endBracket and currentBracket are as you would
-			// think, the
-			// xCounter keeps track of which "X" we are on in the printint out
-			// of the
-			// Polymer subunits (which look like CX1, X1CCOCCX2, X2C, for
-			// example)
-			//
-			// Presub and Innersub are in reference to what is before and inside
-			// brackets with polymer information ([Lv\Po\Te...])
+			/*
+			 * placeHolder shows where we are now in the string,
+			 * previousPlace is where we just were,
+			 * endBracket and currentBracket are obvious
+			 * xCounter keeps track of which X we are on
+			 * as far as polymeric placeholders (CX1 or X4C, eg)
+			 * Presub and Innersub reference what is before or
+			 * inside the brackets with polymer information
+			 */
 			int length = SMILES.length();
 			int placeHolder = 0, previousPlace = 0;
 			int endBracket, currentBracket, xCounter = 1;
@@ -401,27 +378,17 @@ public class PolymerServlet extends HttpServlet {
 
 			// while we still have parts of the string to trawl through
 			while (placeHolder < length) {
-				// the bracket we're looking at is the next bracket in the
-				// string
 				currentBracket = SMILES.indexOf('[', placeHolder);
 
-				// if the indexOf function returned -1, there is no next bracket
-				// so we will jump into this routine and break the while
+				//if no next bracket
 				if (currentBracket < 0) {
 					placeHolder = length;
 					break;
 				}
 
-				// Ensure that the looking at the next four characters after a
-				// given
-				// bracket do not put us past the length. If it does put us past
-				// the
-				// length, we simply add the rest of the SMILES string to a new
-				// segment
-				// and call 'er done.
+				// make sure we do not pass end of string
+				// by looking at 4 chars inside bracket
 				if (currentBracket + 4 < SMILES.length()) {
-					// if bracket exists, does it match any of the following?
-					// and set place to current bracket
 					placeHolder = currentBracket;
 					if (SMILES.substring(currentBracket, currentBracket + 4)
 							.equals("[Po:")
@@ -510,18 +477,11 @@ public class PolymerServlet extends HttpServlet {
 							smilesArray.get(ai).add(
 									"X" + xCounter + endSubString);
 						}
-
-						// end sets
 						previousPlace = endBracket + 1;
-						// ++ai; -- done above in a more advantageous place?
-					} else { // if bracket is not one of the special brackets,
-								// crawl
-								// down one more.
+					} else { // not special bracket, move on
 						++placeHolder;
 					}
-				} else { // dealing with fringe cases where we have something in
-							// brackets in an endgroup very near to the end,
-							// e.g. polystyrene
+				} else { // bracket puts you over end
 					smilesArray.add(new ArrayList<String>());
 					smilesArray.get(ai).add(
 							"X" + xCounter
@@ -536,10 +496,16 @@ public class PolymerServlet extends HttpServlet {
 		}
 		return smilesArray;
 	}
-	
+
+	/*
+	 * This method looks through the smiles array
+	 * and deals with putting the degrees in the 
+	 * proper 'place,' and assigned to the proper
+	 * SMILES unit or meta-name (RU1, RU2, RU1RU2, etc)
+	 */
 	private ArrayList<ArrayList<String>> parseDegrees(
 			ArrayList<ArrayList<String>> smilesArray) {
-		
+
 		int RUcounter = 1, sCounter = 1;
 		boolean beginFlag = true;
 		// first go through and add the metonyms
@@ -616,65 +582,48 @@ public class PolymerServlet extends HttpServlet {
 			cont = false;
 		}
 		int tempSize;
-		
+
 		for (int i = 0; i < finalArray.size(); i += 2) {
 			tempSize = smilesArray.size();
 			if (!finalArray.get(i).equals("")) {
 				smilesArray.add(new ArrayList<String>());
-				smilesArray.get(tempSize).add(getSmilesOf(smilesArray, finalArray.get(i+1)));
+				smilesArray.get(tempSize).add(
+						getSmilesOf(smilesArray, finalArray.get(i + 1)));
 				// adds the string of RUs first
 				smilesArray.get(tempSize).add(finalArray.get(i + 1));
 				smilesArray.get(tempSize).add(finalArray.get(i));
-				
+
 			}
 		}
-		
+
 		return smilesArray;
 	}
-	
+
+	/* This method accepts an array of () and a string with an unbroken
+	 * list of the repeat units desired to get the SMILES string of
+	 * (e.g., RU1RU3RU5 means you will get the SMILES of RU1, RU3, and RU5.
+	 * The array that you pass must have the SMILES strings contained in the
+	 * canonical manner.
+	 */
 	private String getSmilesOf(ArrayList<ArrayList<String>> array, String rus) {
 		String[] ruArray = rus.split("RU");
 		String retStr = "X" + (ruArray[0] + 1) + "";
 
-		for(int i=0; i<ruArray.length; ++i){
+		for (int i = 0; i < ruArray.length; ++i) {
 			retStr = retStr + array.get(i).get(0).replaceAll("X[\\d]+", "");
 		}
 		int temp = (Integer.parseInt(ruArray[ruArray.length - 1]) + 1);
 		retStr += "X" + temp;
 		return retStr;
 	}
-	
+
 	private String removePolymerInfo(String smi) {
-		String newsmi = "[Te]" + smi.replaceAll("\\[[TePoLv].+?\\]","");
+		String newsmi = "[Te]" + smi.replaceAll("\\[[TePoLv].+?\\]", "");
 		newsmi += "[Te]";
-		
-		System.out.println("New smi: " + newsmi);
-		
 		return newsmi;
 	}
 
-	/*
-	 * private ArrayList<ArrayList<String>> combForDegrees(
-	 * ArrayList<ArrayList<String>> smilesArray) { ArrayList<String> AllDegArray
-	 * = new ArrayList<String>(); ArrayList<String> CurRowDegs = new
-	 * ArrayList<String>(); String thisItem;
-	 * 
-	 * for (int i = 0; i < smilesArray.size(); ++i) { // start from 1 to get
-	 * only degree information String segmentName = (String)
-	 * smilesArray.get(i).get(0); for (int k = 1; k < smilesArray.get(i).size();
-	 * ++k) { // add all elements of this row to the CRD
-	 * CurRowDegs.add(smilesArray.get(i).get(k)); } smilesArray.get(i).clear();
-	 * smilesArray.get(i).add(segmentName); for (int j = 0; j <
-	 * AllDegArray.size(); ++j) { smilesArray.get(i).add(AllDegArray.get(j)); }
-	 * for (int l = 0; l < CurRowDegs.size(); ++l) { thisItem =
-	 * CurRowDegs.get(l); if (AllDegArray.contains(thisItem)) {
-	 * AllDegArray.remove(thisItem); } else { AllDegArray.add(thisItem); } }
-	 * CurRowDegs.clear(); }
-	 * 
-	 * return smilesArray; }
-	 */
-
-	// This is an unused method for now, but could be used for testing.
+	// TODO Injecting the polymer into the DB happens here
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// Set a cookie for the user, so that the counter does not increase
@@ -683,7 +632,6 @@ public class PolymerServlet extends HttpServlet {
 		// Set the session valid for 5 secs
 		session.setMaxInactiveInterval(5);
 		response.setContentType("text/plain");
-		PrintWriter out = response.getWriter();
 
 		// Sample json
 
@@ -698,8 +646,9 @@ public class PolymerServlet extends HttpServlet {
 		p.persist(poly);
 
 		String jsonPolymer = gson.toJson(poly, Polymer.class);
-		out.println("And here is a sample json serialized polymer java object:\n\n "
-				+ jsonPolymer);
+		System.out
+				.println("And here is a sample json serialized polymer java object:\n\n "
+						+ jsonPolymer);
 	}
 
 	protected Polymer createPolymer() {

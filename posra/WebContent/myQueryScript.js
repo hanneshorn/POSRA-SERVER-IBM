@@ -25,6 +25,8 @@ var Info = {
 	disableJ2SLoadMonitor : true,
 	disableInitialConsole : true,
 	allowJavaScript : true,
+	addSelectionOptions: false,
+	script: "set antialiasDisplay",
 	coverImage: "./images/issueblurry.gif"
 }
 
