@@ -45,14 +45,13 @@
 
 		<div id="tabcontent" class="tab-content">
 
-			<div class="header">
-				<h2>
-					<strong>Polymer Structure Recognition (P-OSRA)</strong>
-				</h2>
-			</div>
-
-
 			<div id="download-container" class="tab-pane fad in active">
+
+				<div class="header">
+					<h2>
+						<strong>Polymer Structure Recognition (P-OSRA)</strong>
+					</h2>
+				</div>
 
 				<div class="container-fluid">
 					<div class="row bootstrappieces">
@@ -66,10 +65,13 @@
 									<table>
 										<tr>
 											<td><h4>First, browse for a polymer image...</h4></td>
-											<td><h4>Check to make sure you selected the correct image.</h4></td>
+											<td><h4>Check to make sure you selected the correct
+													image.</h4></td>
 											<td><h4>Finally, submit to P-OSRA!</h4></td>
 										</tr>
-										<tr><td colspan="3"></td></tr>
+										<tr>
+											<td colspan="3"></td>
+										</tr>
 										<tr>
 											<td><input type="file" id="uploadImage"
 												onchange="PreviewImage();" name="user_image" /></td>
@@ -85,10 +87,13 @@
 									<script type="text/javascript">
 										function PreviewImage() {
 											var oFReader = new FileReader();
-											oFReader.readAsDataURL(document.getElementById("uploadImage").files[0]);
+											oFReader
+													.readAsDataURL(document
+															.getElementById("uploadImage").files[0]);
 
 											oFReader.onload = function(oFREvent) {
-												document.getElementById("uploadPreview").src = oFREvent.target.result;
+												document
+														.getElementById("uploadPreview").src = oFREvent.target.result;
 											};
 										};
 									</script>
