@@ -18,7 +18,6 @@ public class RepeatUnit extends Segment{
     private int numSegments;
     private Vector<Segment> segments;
      
-     
     public int getId() {
 		return id;
 	}

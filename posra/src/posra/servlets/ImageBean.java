@@ -6,8 +6,10 @@ public class ImageBean {
 	
 	private String path;
 	private File uploadedFile;
+	private String name;
 	
 	public ImageBean() {
+		name = "";
 		path = "";
 		uploadedFile = new File("");
 	}
@@ -21,6 +23,10 @@ public class ImageBean {
 		return path;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public File getUploadedFile() {
 		return uploadedFile;
 	}
@@ -31,6 +37,10 @@ public class ImageBean {
 	
 	public void setUploadedFile(File f) {
 		uploadedFile = f;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

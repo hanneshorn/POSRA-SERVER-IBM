@@ -28,6 +28,7 @@ import posra.dataaccess.PolymerHome;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.util.SystemUtils;
 
 /**
  * Servlet implementation class PolymerServlet
@@ -63,12 +64,15 @@ public class PolymerServlet extends HttpServlet {
 	private File imagePath;
 
 	public void init() throws ServletException {
-		// filePath = getServletContext().getInitParameter("image_location");
-		filePath = "C:" + "\\" + "Users" + "\\" + "IBM_ADMIN" + "\\" + "Documents" + "\\" + "POSRA-SERVER-IBM" + "\\" + "posra" + "\\" + "WebContent" + "\\" + "UploadedImages" + "\\";
+		filePath = getServletContext().getInitParameter("image_location");
 		osraPath = getServletContext().getInitParameter("osra_location");
 		posraScriptPath = getServletContext().getInitParameter(
 				"posra_script_location");
 		imagePath = new File(filePath);
+
+		String posraPath = SystemUtils.getEnv("POSRA_PATH");
+		osraPath = posraPath + "\\src\\osra.exe";
+		posraScriptPath = posraPath + "\\posra.sh";
 
 		if (!new File(osraPath).exists()) {
 			System.err.println("POSRA binary '" + osraPath + "' not found!");
@@ -89,6 +93,8 @@ public class PolymerServlet extends HttpServlet {
 				throw new IOException("\"images\" directory could not be made.");
 			}
 		}
+		
+		HttpSession sess = request.getSession(true);
 
 		// reading through request
 		for (Part part : request.getParts()) {
@@ -99,14 +105,14 @@ public class PolymerServlet extends HttpServlet {
 			// origFilePath is the path on the client of the file being uploaded
 			String origFilePath = getUploadedFileName(part);
 			ImageBean ib = new ImageBean();
-			
 
 			// the "fileName" will be the local path (filePath) and just the
 			// file name of the uploaded file.
 			File newFile = new File(origFilePath);
 			String fileName = filePath + newFile.getName();
-			ib.setPath(newFile.getName());
-			
+			ib.setPath(filePath);
+			ib.setName(newFile.getName());
+
 			System.out.println("file name: " + fileName);
 
 			// There is io here, a try/catch is needed in case there is a
@@ -124,7 +130,7 @@ public class PolymerServlet extends HttpServlet {
 
 				ib.setUploadedFile(newFile);
 				request.setAttribute("imagebean", ib);
-				
+
 				// "fileName" is fullPath to File On Server
 				// "newFile" is the Java File.
 				Process process = new ProcessBuilder(osraPath, "-f", "can",
@@ -132,7 +138,7 @@ public class PolymerServlet extends HttpServlet {
 
 				try (BufferedReader pbr = new BufferedReader(
 						new InputStreamReader(process.getInputStream()))) {
-					
+
 					// stdout from process
 					String line;
 					while ((line = pbr.readLine()) != null) {
@@ -150,6 +156,11 @@ public class PolymerServlet extends HttpServlet {
 					// int rc = process.exitValue();
 
 					String SMILES = line;
+					
+					if(SMILES == null) {
+						throw new IOException();
+					}
+					
 					String SmiNoPoly = removePolymerInfo(SMILES);
 
 					// fixes minor sidechain issues
@@ -168,16 +179,16 @@ public class PolymerServlet extends HttpServlet {
 									SMILESArray.get(i).get(k));
 						}
 					}
-					
+
 					// remove polymeric information so that it can be used
 					// with JSmol modeling
 					pureSMILESArray = makePure(pureSMILESArray);
-					
+
 					// add to a JavaBean named PolymerBean so we can
 					// pass the request onto the JSP page
-					PolymerBean pb1 = new PolymerBean(SmiNoPoly, SMILESArray,
-							pureSMILESArray);
+					PolymerBean pb1 = new PolymerBean(SMILES, SmiNoPoly, SMILESArray, pureSMILESArray);
 					request.setAttribute("polymerbean", pb1);
+					sess.setAttribute("polymerbean", pb1);
 
 					// dispatch information to jsp page
 					String url = "/results.jsp";
@@ -224,9 +235,9 @@ public class PolymerServlet extends HttpServlet {
 		boolean eg1hp = hasPolymer(eg1);
 		boolean eg2hp = hasPolymer(eg2);
 
-		/* This finds the matching parenthesis of the
-		 * paren you pass it. Pass a 1 if you are passing
-		 * an opening paren, and a -1 if passing a closing
+		/*
+		 * This finds the matching parenthesis of the paren you pass it. Pass a
+		 * 1 if you are passing an opening paren, and a -1 if passing a closing
 		 * paren. 's' is the string to iterate over.
 		 */
 		int firstMatch = findMatchingParen(firstParen, 1, s);
@@ -251,10 +262,10 @@ public class PolymerServlet extends HttpServlet {
 		return s.contains("[Lv:") || s.contains("[Po:") || s.contains("[Te:");
 	}
 
-	/* This finds the matching parenthesis of the
-	 * paren you pass it. Pass a 1 if you are passing
-	 * an opening paren, and a -1 if passing a closing
-	 * paren. 's' is the string to iterate over.
+	/*
+	 * This finds the matching parenthesis of the paren you pass it. Pass a 1 if
+	 * you are passing an opening paren, and a -1 if passing a closing paren.
+	 * 's' is the string to iterate over.
 	 */
 	public static int findMatchingParen(int paren, int adder, String s) {
 		int match = paren, counter = 1;
@@ -273,13 +284,10 @@ public class PolymerServlet extends HttpServlet {
 	}
 
 	/*
-	 * s is the string to iterate over,
-	 * eg is the end group to put in the parens
-	 * seg is the segment to take out of the parens
-	 * If we are passed a 0 in 'firstOrLast',
-	 * that signifies replacement at the front 
-	 * of the molecule, which requires reversal
-	 * of the string originally inside the parens.
+	 * s is the string to iterate over, eg is the end group to put in the parens
+	 * seg is the segment to take out of the parens If we are passed a 0 in
+	 * 'firstOrLast', that signifies replacement at the front of the molecule,
+	 * which requires reversal of the string originally inside the parens.
 	 */
 	public static String switchParentheses(String s, String eg, String seg,
 			int firstOrLast) {
@@ -296,10 +304,9 @@ public class PolymerServlet extends HttpServlet {
 	}
 
 	/*
-	 * This method naively switches the order of everything
-	 * in a string except for the contents of polymer brackets,
-	 * which are maintained so that their left-to-right 
-	 * reading will not be disturbed.
+	 * This method naively switches the order of everything in a string except
+	 * for the contents of polymer brackets, which are maintained so that their
+	 * left-to-right reading will not be disturbed.
 	 */
 	public static String switchOrder(String switchMe) {
 		String newString = "", temp = "";
@@ -332,9 +339,9 @@ public class PolymerServlet extends HttpServlet {
 	}
 
 	/*
-	 * This method runs through the SMILES array and 
-	 * replaces all of the end labels (X3, eg) with
-	 * [Te] in order to be able to use it for JSmol modeling.
+	 * This method runs through the SMILES array and replaces all of the end
+	 * labels (X3, eg) with [Te] in order to be able to use it for JSmol
+	 * modeling.
 	 */
 	private ArrayList<ArrayList<String>> makePure(
 			ArrayList<ArrayList<String>> SArray) {
@@ -361,13 +368,11 @@ public class PolymerServlet extends HttpServlet {
 			SMILES = SMILES.trim();
 
 			/*
-			 * placeHolder shows where we are now in the string,
-			 * previousPlace is where we just were,
-			 * endBracket and currentBracket are obvious
-			 * xCounter keeps track of which X we are on
-			 * as far as polymeric placeholders (CX1 or X4C, eg)
-			 * Presub and Innersub reference what is before or
-			 * inside the brackets with polymer information
+			 * placeHolder shows where we are now in the string, previousPlace
+			 * is where we just were, endBracket and currentBracket are obvious
+			 * xCounter keeps track of which X we are on as far as polymeric
+			 * placeholders (CX1 or X4C, eg) Presub and Innersub reference what
+			 * is before or inside the brackets with polymer information
 			 */
 			int length = SMILES.length();
 			int placeHolder = 0, previousPlace = 0;
@@ -380,7 +385,7 @@ public class PolymerServlet extends HttpServlet {
 			while (placeHolder < length) {
 				currentBracket = SMILES.indexOf('[', placeHolder);
 
-				//if no next bracket
+				// if no next bracket
 				if (currentBracket < 0) {
 					placeHolder = length;
 					break;
@@ -498,10 +503,9 @@ public class PolymerServlet extends HttpServlet {
 	}
 
 	/*
-	 * This method looks through the smiles array
-	 * and deals with putting the degrees in the 
-	 * proper 'place,' and assigned to the proper
-	 * SMILES unit or meta-name (RU1, RU2, RU1RU2, etc)
+	 * This method looks through the smiles array and deals with putting the
+	 * degrees in the proper 'place,' and assigned to the proper SMILES unit or
+	 * meta-name (RU1, RU2, RU1RU2, etc)
 	 */
 	private ArrayList<ArrayList<String>> parseDegrees(
 			ArrayList<ArrayList<String>> smilesArray) {
@@ -599,11 +603,11 @@ public class PolymerServlet extends HttpServlet {
 		return smilesArray;
 	}
 
-	/* This method accepts an array of () and a string with an unbroken
-	 * list of the repeat units desired to get the SMILES string of
-	 * (e.g., RU1RU3RU5 means you will get the SMILES of RU1, RU3, and RU5.
-	 * The array that you pass must have the SMILES strings contained in the
-	 * canonical manner.
+	/*
+	 * This method accepts an array of () and a string with an unbroken list of
+	 * the repeat units desired to get the SMILES string of (e.g., RU1RU3RU5
+	 * means you will get the SMILES of RU1, RU3, and RU5. The array that you
+	 * pass must have the SMILES strings contained in the canonical manner.
 	 */
 	private String getSmilesOf(ArrayList<ArrayList<String>> array, String rus) {
 		String[] ruArray = rus.split("RU");
@@ -618,45 +622,19 @@ public class PolymerServlet extends HttpServlet {
 	}
 
 	private String removePolymerInfo(String smi) {
-		String newsmi = "[Te]" + smi.replaceAll("\\[[TePoLv].+?\\]", "");
-		newsmi += "[Te]";
+		if(smi == null) {
+			smi = "Te";
+		}
+		
+		String newsmi = smi.replaceAll("\\[[TePoLv].+?\\]", "");
 		return newsmi;
 	}
 
 	// TODO Injecting the polymer into the DB happens here
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// Set a cookie for the user, so that the counter does not increase
-		// every time the user presses refresh
-		HttpSession session = request.getSession(true);
-		// Set the session valid for 5 secs
-		session.setMaxInactiveInterval(5);
-		response.setContentType("text/plain");
-
-		// Sample json
-
-		// Get Gson object
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-		Polymer poly = createPolymer();
-		poly.setName("Polystyrene");
-		poly.setExternalId("38529384");
-
-		PolymerHome p = new PolymerHome();
-		p.persist(poly);
-
-		String jsonPolymer = gson.toJson(poly, Polymer.class);
-		System.out
-				.println("And here is a sample json serialized polymer java object:\n\n "
-						+ jsonPolymer);
-	}
-
-	protected Polymer createPolymer() {
-		Polymer p = new Polymer();
-		p.setName("test");
-		// PolymerHome ph = new PolymerHome();
-
-		return p;
+		
+			doPost(request, response);
 	}
 
 	public void destroy() {
