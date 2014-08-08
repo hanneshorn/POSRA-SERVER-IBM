@@ -4,11 +4,20 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Here is a title</title>
+<title>Polymer Added to DB!</title>
 </head>
 <body>
 
-<p> This page has a paragraph about how you added something to a database, which is pretty cool stuff and stuff.
+<h1>Polymer Added to Database!</h1>
+
+<p> Your polymer has been successfully added to the database. Thank you! </p>
+
+<p>You may return to the main page by way of the back button on
+		your browser, or by clicking the return button below:</p>
+
+<form action='index.html' method='post'>
+	<input type='submit' value='Return'>
+</form>
 
 </body>
 </html>

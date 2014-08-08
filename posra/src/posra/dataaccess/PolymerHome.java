@@ -30,25 +30,13 @@ public class PolymerHome {
 
 	protected SessionFactory getSessionFactory() {
 		try {
-			
-				// return (SessionFactory) new InitialContext()
-				//	.lookup("SessionFactory");
 			Configuration configuration = new Configuration()
 					.configure("posra/dataaccess/hibernate.cfg.xml");
 			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 					.applySettings(configuration.getProperties()).build();
-			// StandardServiceRegistryBuilder builder = new
-			// StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
 			SessionFactory factory = configuration
 					.buildSessionFactory(serviceRegistry);
-			// servletContextEvent.getServletContext().setAttribute("SessionFactory",
-			// sessionFactory);
-
-			// SessionFactory sessionFactory = new
-			// Configuration().configure("/posra/dataaccess/hibernate.cfg.xml").buildSessionFactory();
-			return factory; // sessionFactory; // (SessionFactory) new
-							// InitialContext()
-			// .lookup("SessionFactory");
+			return factory;
 			
 		} catch (Exception e) {
 			log.error("Could not locate SessionFactory in JNDI", e);

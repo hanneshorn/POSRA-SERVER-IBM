@@ -9,6 +9,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
+import org.hibernate.Session;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Example;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * Home object for domain model class Smiles.
@@ -23,8 +28,27 @@ public class SmilesHome {
 
 	protected SessionFactory getSessionFactory() {
 		try {
-			return (SessionFactory) new InitialContext()
-					.lookup("SessionFactory");
+			/* return (SessionFactory) new InitialContext()
+					.lookup("SessionFactory");*/
+			
+			// return (SessionFactory) new InitialContext()
+			//	.lookup("SessionFactory");
+		Configuration configuration = new Configuration()
+				.configure("posra/dataaccess/hibernate.cfg.xml");
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+				.applySettings(configuration.getProperties()).build();
+		// StandardServiceRegistryBuilder builder = new
+		// StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
+		SessionFactory factory = configuration
+				.buildSessionFactory(serviceRegistry);
+		// servletContextEvent.getServletContext().setAttribute("SessionFactory",
+		// sessionFactory);
+
+		// SessionFactory sessionFactory = new
+		// Configuration().configure("/posra/dataaccess/hibernate.cfg.xml").buildSessionFactory();
+		return factory; // sessionFactory; // (SessionFactory) new
+						// InitialContext()
+		// .lookup("SessionFactory");
 		} catch (Exception e) {
 			log.error("Could not locate SessionFactory in JNDI", e);
 			throw new IllegalStateException(
@@ -35,7 +59,16 @@ public class SmilesHome {
 	public void persist(Smiles transientInstance) {
 		log.debug("persisting Smiles instance");
 		try {
-			sessionFactory.getCurrentSession().persist(transientInstance);
+			/** Session sess = sessionFactory.getCurrentSession();
+			sess.beginTransaction();
+			sess.persist(transientInstance);
+			sess.getTransaction().commit();
+			log.debug("persist successful"); 
+			**/
+			Session sess = sessionFactory.getCurrentSession();
+			sess.beginTransaction();
+			sess.persist(transientInstance);
+			sess.getTransaction().commit();
 			log.debug("persist successful");
 		} catch (RuntimeException re) {
 			log.error("persist failed", re);

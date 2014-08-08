@@ -163,7 +163,7 @@
 						<jsp:setProperty name="pbean" property="pureSMILESArray" value="${polymerbean.pureSMILESArray}" />
 						
 						</jsp:useBean>
-						
+						<input type="text" name="pname" placeholder="Input polymer name" />
 						<input type="submit" value="Add to Database" />
 					</form>
 					

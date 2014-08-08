@@ -3,15 +3,21 @@ package posra.dataaccess;
 // Generated Jun 22, 2014 10:16:50 PM by Hibernate Tools 4.0.0
 
 import java.util.List;
+
 import javax.naming.InitialContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Example;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * Home object for domain model class PolymerRepeatUnitSegmentAssociation.
+ * 
  * @see posra.dataaccess.PolymerRepeatUnitSegmentAssociation
  * @author Hibernate Tools
  */
@@ -24,8 +30,13 @@ public class PolymerRepeatUnitSegmentAssociationHome {
 
 	protected SessionFactory getSessionFactory() {
 		try {
-			return (SessionFactory) new InitialContext()
-					.lookup("SessionFactory");
+			Configuration configuration = new Configuration()
+					.configure("posra/dataaccess/hibernate.cfg.xml");
+			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+					.applySettings(configuration.getProperties()).build();
+			SessionFactory factory = configuration
+					.buildSessionFactory(serviceRegistry);
+			return factory;
 		} catch (Exception e) {
 			log.error("Could not locate SessionFactory in JNDI", e);
 			throw new IllegalStateException(

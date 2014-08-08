@@ -166,7 +166,7 @@ public class PolymerServlet extends HttpServlet {
 					// fixes minor sidechain issues
 					SMILES = fixSideChain(SMILES, "");
 					// parses SMILES into a 2D arraylist
-					ArrayList<ArrayList<String>> SMILESArray = parseSMILESString(SMILES);
+					ArrayList<ArrayList<String>> SMILESArray = parseSMILESString(SMILES, request);
 					// deals with the nesting of degrees
 					SMILESArray = parseDegrees(SMILESArray);
 
@@ -200,6 +200,9 @@ public class PolymerServlet extends HttpServlet {
 
 			catch (IOException e) {
 				String url2 = "/error.jsp";
+				if(request.getAttribute("error") == null) {
+					request.setAttribute("error", "Something went wrong with processing the image you sent. Perhaps it did not return a SMILES string.");
+				}
 				RequestDispatcher dispatcher2 = getServletContext()
 						.getRequestDispatcher(url2);
 				dispatcher2.forward(request, response);
@@ -356,7 +359,14 @@ public class PolymerServlet extends HttpServlet {
 		return SArray;
 	}
 
-	private ArrayList<ArrayList<String>> parseSMILESString(String SMILES) {
+	/*
+	 * This method looks through the SMILES string and puts the relevant information
+	 * in an array.
+	 * 
+	 * Looking back, I should have done this recursively, probably, but it's too 
+	 * late now.
+	 */
+	private ArrayList<ArrayList<String>> parseSMILESString(String SMILES, HttpServletRequest request) {
 		ArrayList<ArrayList<String>> smilesArray = new ArrayList<ArrayList<String>>();
 
 		// if SMILES string does not exist/was not printed
@@ -364,6 +374,7 @@ public class PolymerServlet extends HttpServlet {
 			System.out.println("There was no SMILES string to process.");
 			smilesArray.add(new ArrayList<String>());
 			smilesArray.get(0).add("There was no SMILES string to process.");
+			request.setAttribute("error", "There was no SMILES string to process; OSRA failed to recognize the image.");
 		} else { // smiles string does exist
 			SMILES = SMILES.trim();
 
@@ -629,8 +640,7 @@ public class PolymerServlet extends HttpServlet {
 		String newsmi = smi.replaceAll("\\[[TePoLv].+?\\]", "");
 		return newsmi;
 	}
-
-	// TODO Injecting the polymer into the DB happens here
+	
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
